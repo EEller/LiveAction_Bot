@@ -15,3 +15,19 @@ exports.final = function(message, client, user){
 	//interrompe a execucao de outros maisFaculdade
 	return false;
 };
+
+exports.loop = function(message, client, user){
+
+    let msg = {
+        id: Lime.Guid(),
+        type: "text/plain",
+        to: message.from,
+        content: "Ops! Não entendi o que você falou, vamos voltar no menu inicial."
+    };
+    client.sendMessage(msg);
+    setTimeout(function() {
+        client.sendMessage(menu.menuInicial(message.from, user));
+    }, 1000);
+    //interrompe a execucao de outros maisFaculdade
+    return false;
+};

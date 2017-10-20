@@ -45,96 +45,38 @@ client.connect()
 	client.addMessageReceiver("text/plain", function(message) {
         console.log(message);
 
-        var userCommand = {
-            "id": Lime.Guid(),
-            "to": "postmaster@messenger.gw.msging.net",
-            "method": "get",
-            "uri": "lime://messenger.gw.msging.net/accounts/" + message.from.split("@")[0]
-        };
+        if (message.content === 'COMEÇAR'){
+            console.log('oi');
+            receivers.init(message, client, '');
+        } else {
+            receiverFim.loop(message, client);
+        }
 
-        let remetente = encodeURIComponent(message.from.split('/')[0]);
-        let command = {
-            "id": Lime.Guid(),
-            "method": "get",
-            "uri": "/buckets/" + remetente
-        };
-
-        // recupera a sessao do usuario remetente para recuperar os dados armazenados na mesma
-		client.sendCommand(userCommand).then(function(dataUser){
-            //console.log(dataUser);
-            var infoUser = dataUser;
-
-            // verifica o conteudo da mensagem para direcionar ao status correto
-            if (message.content == "Faculdade"){
-                receiverFaculdade.faculdade(message, client, infoUser.resource);
-            } if (message.content == "Faq"){
-                receiverFAQ.faq(message, client, infoUser.resource);
-            }  else {
-                receivers.init(message, client, infoUser.resource);
-                // // se nao foi informada nenhuma das opcoes de menu, recupera o status do usuario
-                // client.sendCommand(command).then(function (result) {
-                //     console.log("result", result);
-
-                //     //if (infoUser){
-                //     switch (result.resource.sessionState) {
-                //         case 'Faculdade':
-                //             receivers.init(message, client, infoUser.resource);
-                //             break;
-                //         case 'FAQ':
-                //             receivers.init(message, client, infoUser.resource);
-                //             break;
-                //         default:
-                //             receivers.init(message, client, infoUser.resource);
-                //     }
-                // }, function (errorCommand) {
-                //     // se o usuario nao possui bucket, grava o mesmo no status inicial
-                //     console.log(errorCommand);
-
-                //     let firstCommand = {
-                //         "id": Lime.Guid(),
-                //         "method": "set",
-                //         "uri": "/buckets/" + message.from.split('@')[0],
-                //         "type": "application/json",
-                //         "resource": {
-                //             "sessionState": " "
-                //         }
-                //     };
-                //     client.sendCommand(firstCommand);
-                //     receivers.init(message, client, infoUser.resource);
-                // });
-            }
-
-		}, function(error) {
-            // se o messenger nao aceitou a mensagem enviada inicialmente, grava o mesmo no status inicial
-            console.log(error);
-		});
-	});
-
-   
-    /* Receivers responsáveis pelo controle do fluxo do Menu.*/
-    client.addMessageReceiver('application/vnd.cotemig.inicio+json', function(message) {
-        receivers.init(message, client, '');
-    });
-	client.addMessageReceiver('application/vnd.cotemig.faculdade+json', function(message) {
-		receiverFaculdade.faculdade(message, client);
-	});
-	client.addMessageReceiver('application/vnd.cotemig.faq+json', function(message) {
-		receiverFAQ.faq(message, client);
-	});
-    client.addMessageReceiver('application/vnd.cotemig.tecnologo+json', function(message) {
-        receiverTecnologo.tecnico(message, client);
-    });
-    client.addMessageReceiver('application/vnd.cotemig.bacharelado+json', function(message) {
-        receiverBacharelado.bacharel(message, client);
-    });
-    client.addMessageReceiver('application/vnd.cotemig.inscrever-inscricao+json', function(message) {
-        receiverInscricao.inscrever(message, client);
-    });
-    client.addMessageReceiver('application/vnd.cotemig.saiba+json', function(message) {
-        receiverSaiba.mais(message, client);
-    });
-    client.addMessageReceiver('application/vnd.cotemig.fim+json', function(message) {
-        receiverFim.final(message, client);
+        /* Receivers responsáveis pelo controle do fluxo do Menu.*/
+        client.addMessageReceiver('application/vnd.cotemig.inicio+json', function(message) {
+            receivers.init(message, client, '');
+        });
+        client.addMessageReceiver('application/vnd.cotemig.faculdade+json', function(message) {
+            receiverFaculdade.faculdade(message, client);
+        });
+        client.addMessageReceiver('application/vnd.cotemig.faq+json', function(message) {
+            receiverFAQ.faq(message, client);
+        });
+        client.addMessageReceiver('application/vnd.cotemig.tecnologo+json', function(message) {
+            receiverTecnologo.tecnico(message, client);
+        });
+        client.addMessageReceiver('application/vnd.cotemig.bacharelado+json', function(message) {
+            receiverBacharelado.bacharel(message, client);
+        });
+        client.addMessageReceiver('application/vnd.cotemig.inscrever-inscricao+json', function(message) {
+            receiverInscricao.inscrever(message, client);
+        });
+        client.addMessageReceiver('application/vnd.cotemig.saiba+json', function(message) {
+            receiverSaiba.mais(message, client);
+        });
+        client.addMessageReceiver('application/vnd.cotemig.fim+json', function(message) {
+            receiverFim.final(message, client);
+        });
     });
 })
 .catch((err) => console.error(err));;
